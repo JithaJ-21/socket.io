@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Socket Chat</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px 20px; background: #414143 }
+    #messages { list-style: none; padding: 0; max-height: 300px; overflow-y: auto; }
+    .message { padding: 8px 12px; margin: 5px 0 ; border-radius: 10px; background: #f8f8f8; width: fit-content; }
+    .right { background: #82ecbc; align-self: flex-end; }
+    form { display: flex; gap: 10px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <ul id="messages"></ul>
+  <form id="form" action="">
+    <input id="input" autocomplete="off" /><button>Send</button>
+  </form>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const messages = document.getElementById('messages');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      if (input.value) {
+        socket.emit('chat message', input.value);
+        input.value = '';
+      }
+    });
+
+    socket.on('chat message', function(msg) {
+      const item = document.createElement('li');
+      item.classList.add('message', 'left'); // or 'right' if it's you
+      item.textContent = msg;
+      item.className = 'message';
+      messages.appendChild(item);
+      messages.scrollTop = messages.scrollHeight;
+    });
+  </script>
+</body>
+</html>
